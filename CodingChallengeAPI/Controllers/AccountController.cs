@@ -44,6 +44,15 @@ namespace CodingChallengeAPI.Controllers
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount(Account account)
         {
+            var acc = await _unitOfWork.Account.All();
+            if (acc.Count() > 0)
+            {
+                var exists = acc.Where(x => x.IBAN == account.IBAN).FirstOrDefault();
+                if (exists != null)
+                    return BadRequest();
+
+            }
+
             if (ModelState.IsValid)
             {
                 await _unitOfWork.Account.Add(account);
@@ -62,18 +71,18 @@ namespace CodingChallengeAPI.Controllers
 
         }
 
-        [HttpPut]
-        [Route("UpdateAccount")]
-        public async Task<IActionResult> UpdateAccount(long id, Account account)
-        {
-            if (id != account.AccountId)
-                return BadRequest();
+        //[HttpPut]
+        //[Route("UpdateAccount")]
+        //public async Task<IActionResult> UpdateAccount(long id, Account account)
+        //{
+        //    if (id != account.AccountId)
+        //        return BadRequest();
 
-            await _unitOfWork.Account.Update(account);
-            await _unitOfWork.CompleteAsync();
-            return NoContent();
+        //    await _unitOfWork.Account.Update(account);
+        //    await _unitOfWork.CompleteAsync();
+        //    return NoContent();
 
-        }
+        //}
 
         [HttpDelete]
         [Route("DeleteAccount")]
